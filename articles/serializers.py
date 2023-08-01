@@ -7,10 +7,7 @@ from .models import Article, Comment
 class ArticleListSerializer(serializers.ModelSerializer):
     photos = PhotoSerializer(many=True, read_only=True)
     created_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M")
-    nickname = serializers.SerializerMethodField()
-
-    def get_nickname(self, obj):
-        return obj.owner.nickname
+    nickname = serializers.StringRelatedField(source="owner.nickname", read_only=True)
 
     class Meta:
         model = Article
@@ -35,17 +32,14 @@ class ArticleDetailSerializer(serializers.ModelSerializer):
 
 
 class CommentSerializer(serializers.ModelSerializer):
-    user = serializers.SerializerMethodField()
+    user = serializers.StringRelatedField(source="user.nickname", read_only=True)
     user_id = serializers.SerializerMethodField()
     like_count = serializers.SerializerMethodField()
     user_avatar = serializers.SerializerMethodField()
 
-    def get_user(self, obj):
-        return obj.user.nickname
-
     def get_user_id(self, obj):
         return obj.user.id
-    
+
     def get_user_avatar(self, obj):
         return obj.user.avatar
 
